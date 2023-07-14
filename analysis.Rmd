@@ -19,7 +19,7 @@ First we load the libraries we need:
 ```{r message=FALSE, warning=FALSE}
 library(tidyverse)
 library(DT)
-library(DataExplorer)
+library(summarytools)
 ```
 
 # Loading the clean PBS survey data
@@ -30,10 +30,5 @@ pbs <- read_csv("data_clean.csv")
 
 Here is a clickable interface for searching, sorting, and viewing the clean data:
 ```{r}
-#datatable(pbs[1:100,])
-pbs %>%
-    create_report(
-        output_file = paste("Report", format(Sys.time(), "%Y-%m-%d %H:%M:%S %Z"), sep=" - "),
-        report_title = "EDA Report - PBS Dataset"
-    )
+view(dfSummary(pbs))
 ```
