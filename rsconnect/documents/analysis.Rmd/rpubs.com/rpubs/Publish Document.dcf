@@ -3,9 +3,9 @@ title:
 username:
 account: rpubs
 server: rpubs.com
-hostUrl: rpubs.com
-appId: https://api.rpubs.com/api/v1/document/1062661/53da4c7aee8d43409d09e88bd026bad7
-bundleId: https://api.rpubs.com/api/v1/document/1062661/53da4c7aee8d43409d09e88bd026bad7
-url: http://rpubs.com/jkropko/1062661
-when: 1689342669.14874
-lastSyncTime: 1689342669.14876
+envVars: rpubs.com
+hostUrl: https://api.rpubs.com/api/v1/document/1070808/2b83eaaf8d804f32958dea41385ac120
+appId: https://api.rpubs.com/api/v1/document/1070808/2b83eaaf8d804f32958dea41385ac120
+bundleId: http://rpubs.com/publish/claim/1070808/d8de9774adfb49119334be2236cf8155
+url: 1691762311.47619
+version: 1

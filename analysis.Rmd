@@ -1,34 +1,139 @@
 ---
-title: "Analysis of PBS Survey Data"
-author: Ali, Van den Bulk, Kropko
+title: "Trust in PBS"
+author: "Christopher Ali, Hilde Van den Bulck, Jonathan Kropko"
+date: "`r Sys.Date()`"
 output: 
   html_document:
     toc: TRUE
     toc_float: TRUE
-    toc_collapse: TRUE
     number_sections: TRUE
-    theme: spacelab
-date: "`r Sys.Date()`"
+    theme: journal
+editor_options: 
+  markdown: 
+    wrap: 72
 ---
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
 ```
 
-First we load the libraries we need:
-```{r message=FALSE, warning=FALSE}
+# Abstract
+
+This contribution explores the how and why of trust in PBS. After this
+introduction, we sketch the constitutive characteristics of PBS. Next,
+we theoretically explore the notion of trust in general and with regards
+to media in particular, resulting in a set of more specific research
+questions. Subsequently, we discuss the methodological set up. We
+explored US audiences' trust in PBS by means of a survey questionnaire.
+Next, we discuss the results, focusing on institutional aspects, on
+characteristics of the offerings and performance of PBS and on the role
+of long-standing relationships between PBS and its audiences. Finally,
+we discuss the implications of our understanding of what constitutes
+trust in PBS for the institution and for government policy towards PBS
+in an age of distrust in media and society.
+
+# Loading and summarizing the data
+
+We load the following libraries:
+
+```{r, warning=FALSE, message=FALSE}
 library(tidyverse)
 library(DT)
 library(summarytools)
 ```
 
-# Loading the clean PBS survey data
-We load the clean data:
-```{r message=FALSE}
+The cleaned survey data exist in the following CSV file:
+
+```{r, message=FALSE, warning=FALSE}
 pbs <- read_csv("data_clean.csv")
 ```
 
-Here is a clickable interface for searching, sorting, and viewing the clean data:
-```{r}
-view(dfSummary(pbs))
+The following table provides sumamry statistics for all variables in the
+data:
+
+```{r, warning=FALSE}
+print(dfSummary(pbs, 
+                varnumbers   = FALSE, 
+                valid.col    = FALSE, 
+                graph.magnif = 0.76),
+      method = 'render')
 ```
+
+# Analyses
+
+## Characteristics of trustee
+
+Institution-based trust is impersonal and based on the conviction that
+society provides structures (regulations, institutions) that allow
+people to trust those structures and, through that, each other. As
+McKnight & Chervany (2013) explain, this comes with a structural
+assurance: structures have built-in "guarantees" that ensure trusting
+intentions.
+
+Characteristics of PBS as trusted institution:
+
+-   R1: How and in what ways is trust in PBS based in its institutional
+    / structural characteristics (funding, independence)
+
+Comparing all the institutions in terms of level of trust:
+
+```{r, fig.width=12, fig.height=8}
+pbs_trust <- select(pbs, starts_with("personaltrust")) %>%
+  rename("NPR"="personaltrust_npr",
+         "NASA"="personaltrust_nasa",                
+         "Smithsonian"="personaltrust_smithsonian",
+         "PBS"="personaltrust_pbs",
+         "Public Schools"="personaltrust_publicschools",
+         "Congress"="personaltrust_congress",
+         "Current President"="personaltrust_currentpresident",
+         "State Government"="personaltrust_stategovernment",
+         "Postal Services"="personaltrust_postalservices",
+         "Courts of Law"="personaltrust_courtsoflaw",         
+         "Law Enforcement and Police"="personaltrust_lawenforcementpolice",
+         "Military"="personaltrust_military") %>%
+  pivot_longer(c("NPR","NASA","Smithsonian","PBS","Public Schools",
+               "Congress","Current President","State Government",
+               "Postal Services","Courts of Law","Law Enforcement and Police","Military"),
+               names_to = "institution",
+               values_to = "trust") %>%
+  group_by(institution, trust) %>%
+  summarize(count = n()) %>%
+  ungroup() %>%
+  mutate(trust = fct_relevel(trust, "No opinion","Distrust a great deal",
+                             "Somewhat distrust", "Neither trust nor distrust",
+                             "Somewhat trust", "Trust a great deal"),
+         institution = relevel(as.factor(institution),ref="PBS")) %>%
+  na.omit()
+
+g <- ggplot(pbs_trust, aes(y=trust, x=count, fill=institution)) +
+  geom_col() +
+  facet_wrap(~institution) + 
+  guides(fill="none") +
+  theme(text=element_text(family="serif")) +
+  xlab("Count") +
+  ylab("Level of trust")
+g
+
+```
+
+-   Process-based trust results from repeated contact and interaction
+    between trustor and trustee. While the original contact and
+    interaction may be coincidental (stumbling upon a particular media
+    channel), repeated contacts can result in the reduction of
+    uncertainty and the building of trust. o Translated into how long
+    folks have been PBS viewers (Mr Rogers' effect) o R2: How and in
+    what ways is trust in PBS based on processed-based, historical
+    viewing habits?
+-   Character-based trust, finally, results from perceived
+    trustworthiness of particular characteristics of the trustee by the
+    trustor. o Quality of programs o R3: How and in what ways is trust
+    in PBS based on its programmatic and content-based decisions?
+    Characteristics of the trustor
+-   SES, political leanings, wider media use.. o R4: How is trust in PBS
+    related to political affiliations, to media use and attitudes and to
+    wider SES?
+
+(Trust in) PBS news in a polarized news media ecology how does PBS news
+perform on characteristics of 'good journalism' (trustworthiness,
+balance...) compared to other news media how does this differ according
+to characteristics of the audience (SES, political leanings, media use)
