@@ -131,11 +131,28 @@ pbs_whytrust <- select(pbs, open_whyyoutrust, personaltrust_pbs) %>%
 
 knitr::kable(pbs_whytrust)
 ```
-```{r}
-trustwords <- read_csv("PBS categories - open_whyyoutrust(1).csv") %>%
-  filter(`New category`=="Nostalgia, familiarity, and comfort")
-library(tm)
-wordcloud(words = trustwords$`Old category`, min.freq = 1,           max.words=200, random.order=FALSE, rot.per=0.35,            colors=brewer.pal(8, "Dark2"))
+```{r, fig.width=10, fig.height=10}
+library(ggwordcloud)
+library(tidytext)
+data(stop_words)
+trustwords <- read_csv("PBS categories - open_whyyoutrust(1).csv") 
+tw_word <- trustwords %>%
+  mutate(`New category` = fct_recode(`New category`, "News exhibits political moderation, \n unbiasedness, or accuracy" = "News exhibits political moderation, unbiasedness, or accuracy")) %>%
+  unnest_tokens(word, `Old category`) %>%
+  anti_join(stop_words) %>%
+  group_by(`New category`) %>%
+  mutate(catcount = n()) %>%
+  ungroup() %>%
+  group_by(`New category`, word) %>%
+  summarize(count=n(),
+            catcount = mean(catcount),
+            count = count/catcount)
+
+g <- ggplot(tw_word, aes(label = word, size=count, color=count)) +
+  geom_text_wordcloud_area() +
+  facet_wrap(~ `New category`, scales="free") +
+  scale_size_area(max_size = 20) 
+g
 ```
 
 o R2: How and in what ways is trust in PBS based on processed-based, historical viewing habits?
