@@ -40,6 +40,9 @@ We load the following libraries:
 library(tidyverse)
 library(DT)
 library(summarytools)
+library(wordcloud)
+library(wordcloud2)
+library(RColorBrewer)
 ```
 
 The cleaned survey data exist in the following CSV file:
@@ -116,17 +119,33 @@ g
 
 ```
 
--   Process-based trust results from repeated contact and interaction
-    between trustor and trustee. While the original contact and
-    interaction may be coincidental (stumbling upon a particular media
-    channel), repeated contacts can result in the reduction of
-    uncertainty and the building of trust. o Translated into how long
-    folks have been PBS viewers (Mr Rogers' effect) o R2: How and in
-    what ways is trust in PBS based on processed-based, historical
-    viewing habits?
+* Process-based trust results from repeated contact and interaction between trustor and trustee. While the original contact and interaction may be coincidental (stumbling upon a particular media channel), repeated contacts can result in the reduction of uncertainty and the building of trust. Translated into how long folks have been PBS viewers (Mr Rogers' effect) 
+
+```{r}
+pbs_whytrust <- select(pbs, open_whyyoutrust, personaltrust_pbs) %>%
+  mutate(most_trust = (personaltrust_pbs == 'Trust a great deal')) %>%
+  group_by(open_whyyoutrust) %>%
+  summarize(frequency = n(),
+            most_trust = round(100*mean(most_trust), 1)) %>%
+  arrange(-frequency)
+
+knitr::kable(pbs_whytrust)
+```
+```{r}
+trustwords <- read_csv("PBS categories - open_whyyoutrust(1).csv") %>%
+  filter(`New category`=="Nostalgia, familiarity, and comfort")
+library(tm)
+wordcloud(words = trustwords$`Old category`, min.freq = 1,           max.words=200, random.order=FALSE, rot.per=0.35,            colors=brewer.pal(8, "Dark2"))
+```
+
+o R2: How and in what ways is trust in PBS based on processed-based, historical viewing habits?
 -   Character-based trust, finally, results from perceived
     trustworthiness of particular characteristics of the trustee by the
-    trustor. o Quality of programs o R3: How and in what ways is trust
+    trustor. 
+    
+o Quality of programs 
+    
+o R3: How and in what ways is trust
     in PBS based on its programmatic and content-based decisions?
     Characteristics of the trustor
 -   SES, political leanings, wider media use.. o R4: How is trust in PBS
