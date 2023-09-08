@@ -1,0 +1,207 @@
+---
+title: "Trust in PBS"
+author: "Christopher Ali, Hilde Van den Bulck, Jonathan Kropko"
+date: "`r Sys.Date()`"
+output: 
+  html_document:
+    toc: TRUE
+    toc_float: TRUE
+    number_sections: TRUE
+    theme: journal
+editor_options: 
+  markdown: 
+    wrap: 72
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE)
+knitr::opts_chunk$set(cache = TRUE)
+knitr::opts_chunk$set(warning = FALSE)
+knitr::opts_chunk$set(message = FALSE)
+```
+
+# Abstract
+
+This contribution explores the how and why of trust in PBS. After this
+introduction, we sketch the constitutive characteristics of PBS. Next,
+we theoretically explore the notion of trust in general and with regards
+to media in particular, resulting in a set of more specific research
+questions. Subsequently, we discuss the methodological set up. We
+explored US audiences' trust in PBS by means of a survey questionnaire.
+Next, we discuss the results, focusing on institutional aspects, on
+characteristics of the offerings and performance of PBS and on the role
+of long-standing relationships between PBS and its audiences. Finally,
+we discuss the implications of our understanding of what constitutes
+trust in PBS for the institution and for government policy towards PBS
+in an age of distrust in media and society.
+
+# Analyses {.tabset .tabset-fade}
+
+## Initialization of the dataset
+
+
+```{r, warning=FALSE, message=FALSE}
+library(tidyverse)
+library(DT)
+library(summarytools)
+library(wordcloud)
+library(wordcloud2)
+library(RColorBrewer)
+library(ggwordcloud)
+library(tidytext)
+```
+
+```{r, message=FALSE, warning=FALSE}
+pbs <- read_csv("data_clean.csv")
+```
+
+The following table provides summary statistics for all variables in the
+data:
+
+```{r, warning=FALSE}
+print(dfSummary(pbs, 
+                varnumbers   = FALSE, 
+                valid.col    = FALSE, 
+                graph.magnif = 0.76),
+      method = 'render')
+```
+
+## Trust in PBS
+
+For the following analyses we will use the following dependent variables:
+
+* Trust in public institutions including PBS
+* Value for taxpayers money
+* Aspects of PBS that contribute to trust (arts&ed, public funding….)
+* Variables detailing what PSB news, kids, arts and entertainment are considered good at
+* Open questions
+
+Independent variables can include
+
+* age, 
+* political orientation, 
+* income, 
+* race/ethnicity, 
+* other media use
+
+### How and in what ways is trust in PBS based in its institutional / structural characteristics (funding, independence)
+
+The following figure reports aggregate levels of trust for each of 12 American institutions.
+```{r, fig.width=12, fig.height=8}
+pbs_trust <- select(pbs, starts_with("personaltrust")) %>%
+  rename("NPR"="personaltrust_npr",
+         "NASA"="personaltrust_nasa",                
+         "Smithsonian"="personaltrust_smithsonian",
+         "PBS"="personaltrust_pbs",
+         "Public Schools"="personaltrust_publicschools",
+         "Congress"="personaltrust_congress",
+         "Current President"="personaltrust_currentpresident",
+         "State Government"="personaltrust_stategovernment",
+         "Postal Services"="personaltrust_postalservices",
+         "Courts of Law"="personaltrust_courtsoflaw",         
+         "Law Enforcement and Police"="personaltrust_lawenforcementpolice",
+         "Military"="personaltrust_military") %>%
+  pivot_longer(c("NPR","NASA","Smithsonian","PBS","Public Schools",
+               "Congress","Current President","State Government",
+               "Postal Services","Courts of Law","Law Enforcement and Police","Military"),
+               names_to = "institution",
+               values_to = "trust") %>%
+  group_by(institution, trust) %>%
+  summarize(count = n()) %>%
+  ungroup() %>%
+  mutate(trust = fct_relevel(trust, "No opinion","Distrust a great deal",
+                             "Somewhat distrust", "Neither trust nor distrust",
+                             "Somewhat trust", "Trust a great deal"),
+         institution = relevel(as.factor(institution),ref="PBS")) %>%
+  na.omit()
+
+g <- ggplot(pbs_trust, aes(y=trust, x=count, fill=institution)) +
+  geom_col() +
+  facet_wrap(~institution) + 
+  guides(fill="none") +
+  theme(text=element_text(family="serif")) +
+  xlab("Count") +
+  ylab("Level of trust")
+g
+
+```
+
+We can also conduct a comparative analysis across institutions: which institutions are most similar in terms of how individuals rate them comparably?
+
+```{r}
+pbs_trust <- select(pbs, starts_with("personaltrust")) %>%
+  rename("NPR"="personaltrust_npr",
+         "NASA"="personaltrust_nasa",                
+         "Smithsonian"="personaltrust_smithsonian",
+         "PBS"="personaltrust_pbs",
+         "Public Schools"="personaltrust_publicschools",
+         "Congress"="personaltrust_congress",
+         "Current President"="personaltrust_currentpresident",
+         "State Government"="personaltrust_stategovernment",
+         "Postal Services"="personaltrust_postalservices",
+         "Courts of Law"="personaltrust_courtsoflaw",         
+         "Law Enforcement and Police"="personaltrust_lawenforcementpolice",
+         "Military"="personaltrust_military") 
+
+newlevels <- c("1"="Distrust a great deal", "2"="Somewhat distrust",
+               "3"="Neither trust nor distrust", "4"="Somewhat trust",
+               "5"="Trust a great deal", "NA"="No opinion")
+
+pbs_trust <- pbs_trust %>%
+  mutate(NPR = fct_recode(NPR, !!!newlevels),
+         NASA = fct_recode(NASA, !!!newlevels),
+         Smithsonian = fct_recode(Smithsonian, !!!newlevels),
+         PBS = fct_recode(PBS, !!!newlevels),
+         `Public Schools` = fct_recode(`Public Schools`, !!!newlevels),
+         Congress = fct_recode(Congress, !!!newlevels),
+         `Current President` = fct_recode(`Current President`, !!!newlevels),
+         `State Government` = fct_recode(`State Government`, !!!newlevels),
+         `Postal Services` = fct_recode(`Postal Services`, !!!newlevels),
+         `Courts of Law` = fct_recode(`Courts of Law`, !!!newlevels),
+         `Law Enforcement and Police` = fct_recode(`Law Enforcement and Police`, !!!newlevels),
+         Military = fct_recode(Military, !!!newlevels)) %>%
+  mutate_if(is.factor, as.character) %>%
+  mutate_if(is.character, as.numeric)
+
+distance <- dist(t(pbs_trust), method="euclidian")
+
+as.matrix(distance)
+```
+
+### How and in what ways is trust in PBS  based on processed-based, historical viewing habits?
+
+### How and in what ways is trust in PBS based on its programmatic and content-based decisions?
+
+### How is trust in PBS related to political affiliations, to media use and attitudes and to wider SES?
+ 
+
+
+## Role of PBS in trust in news in post-truth era
+
+For the following analyses we will use the following dependent variables:
+
+* Why do you trust PBS: position of national and local news in reasons to trust PBS
+* Open ended questions: role of news in why people trust PBS
+* How much do you trust PBS (news) - comparing with trust in other news outlets
+* What characteristics of PBS news (thoroughness, distinctiveness..) contribute to that trust
+ 
+Independent variables can include
+
+* age, 
+* political orientation, 
+* income, 
+* race/ethnicity, 
+* other media use
+
+### What is the position of news in the overall trust of PBS
+
+### What is said about news in the open questions – news is biggest category
+
+### How does trust in PBS news compare with trust of other mainstream news organizations
+
+### What aspects of pbs news are most trusted by those who watch
+
+### How do these things differ according to age, political orientation, income, race/ethnicity, other media use
+ 
+
+ 

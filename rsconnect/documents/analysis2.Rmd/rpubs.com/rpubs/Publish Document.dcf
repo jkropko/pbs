@@ -1,0 +1,11 @@
+name: Publish Document
+title:
+username:
+account: rpubs
+server: rpubs.com
+hostUrl: rpubs.com
+appId: https://api.rpubs.com/api/v1/document/1079543/a72cc1a6931948a1b0fb1c1ed09cecf9
+bundleId: https://api.rpubs.com/api/v1/document/1079543/a72cc1a6931948a1b0fb1c1ed09cecf9
+url: http://rpubs.com/jkropko/1079543
+when: 1694181665.56408
+lastSyncTime: 1694181665.56408
