@@ -131,7 +131,7 @@ pbs_whytrust <- select(pbs, open_whyyoutrust, personaltrust_pbs) %>%
 
 knitr::kable(pbs_whytrust)
 ```
-```{r, fig.width=10, fig.height=10}
+```{r, fig.width=10, fig.height=10, cache=TRUE}
 library(ggwordcloud)
 library(tidytext)
 data(stop_words)
@@ -155,21 +155,36 @@ g <- ggplot(tw_word, aes(label = word, size=count, color=count)) +
 g
 ```
 
-o R2: How and in what ways is trust in PBS based on processed-based, historical viewing habits?
--   Character-based trust, finally, results from perceived
-    trustworthiness of particular characteristics of the trustee by the
-    trustor. 
-    
-o Quality of programs 
-    
-o R3: How and in what ways is trust
-    in PBS based on its programmatic and content-based decisions?
-    Characteristics of the trustor
--   SES, political leanings, wider media use.. o R4: How is trust in PBS
-    related to political affiliations, to media use and attitudes and to
-    wider SES?
+Paper 1: Trust in PBS
+RQ
+- How and in what ways is trust in PBS based in its institutional / structural characteristics (funding, independence)
+- How and in what ways is trust in PBS  based on processed-based, historical viewing habits?
+- How and in what ways is trust in PBS based on its programmatic and content-based decisions?
+- How is trust in PBS related to political affiliations, to media use and attitudes and to wider SES?
+ 
+Dependent variables
+- Trust in public institutions including PBS
+- Value for taxpayers money
+- Aspects of PBS that contribute to trust (arts&ed, public funding….)
+- Variables detailing what PSB news, kids, arts and entertainment are considered good at
+- Open questions
+Independent variables
+- age, political orientation, income, race/ethnicity, other media use
 
-(Trust in) PBS news in a polarized news media ecology how does PBS news
-perform on characteristics of 'good journalism' (trustworthiness,
-balance...) compared to other news media how does this differ according
-to characteristics of the audience (SES, political leanings, media use)
+Paper 2: Role of PBS in trust in news in post-truth era
+RQ
+- What is the position of news in the overall trust of PBS
+- What is said about news in the open questions – news is biggest category
+- How does trust in PBS news compare with trust of other mainstream news organizations
+- What aspects of pbs news are most trusted by those who watch
+- How do these things differ according to age, political orientation, income, race/ethnicity, other media use
+ 
+Dependent variables:
+- Why do you trust PBS: position of national and local news in reasons to trust PBS
+- Open ended questions: role of news in why people trust PBS
+- How much do you trust PBS (news) - comparing with trust in other news outlets
+- What characteristics of PBS news (thoroughness, distinctiveness..) contribute to that trust
+ 
+Independent variables
+- age, political orientation, income, race/ethnicity, other media use
+ 
