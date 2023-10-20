@@ -49,6 +49,7 @@ library(wordcloud2)
 library(RColorBrewer)
 library(ggwordcloud)
 library(tidytext)
+library(plotly)
 ```
 
 ```{r, message=FALSE, warning=FALSE}
@@ -164,13 +165,79 @@ pbs_trust <- pbs_trust %>%
   mutate_if(is.character, as.numeric)
 
 distance <- dist(t(pbs_trust), method="euclidian")
-
-as.matrix(distance)
 ```
+
+```{r}
+fit <- cmdscale(distance,eig=TRUE, k=2)
+map <- as.data.frame(fit$points) %>%
+  mutate(institution = rownames(fit$points))
+map
+
+trustmeans <- data.frame(institution = names(colMeans(pbs_trust, na.rm=TRUE)),
+                         avg_trust = colMeans(pbs_trust, na.rm=TRUE))
+
+map <- full_join(map, trustmeans, by="institution")
+map
+```
+
+```{r}
+g <- ggplot(map, aes(institution=institution, x=V1, y=V2, color=`avg_trust`)) +
+  geom_point() +
+  xlab("Dimension 1") +
+  ylab("Dimension 2") +
+  ggtitle("A map of institutions with regard to trust") +
+  scale_color_gradient(low='red', high='blue')
+ggplotly(g)
+```
+
+### How and in what ways is trust in PBS based on its programmatic and content-based decisions?
+
+```{r, warning=FALSE, message=FALSE}
+contrib <- select(pbs, starts_with("contrib")) %>%
+  select(-contributetrustpbs_other, -contributetrustpbs_othertext)
+contrib <- contrib %>%
+  pivot_longer(cols = colnames(contrib),
+               names_to = "reason",
+               values_to = "trust") %>%
+  group_by(reason, trust) %>%
+  summarize(count = n()) %>%
+  mutate(reason = fct_recode(reason,
+                             "Adult Programs"="contributetrustpbs_adultprograms",
+                             "Arts and Culture"="contributetrustpbs_artsandculture",
+                             "Children's Programs"="contributetrustpbs_childrenprograms",
+                             "Entertainment"="contributetrustpbs_entertainment",
+                             "Funding"="contributetrustpbs_funding",
+                             "Kids' Games"="contributetrustpbs_kidsgames",
+                             "Local News"="contributetrustpbs_localnews",
+                             "Local Stations"="contributetrustpbs_localstation",
+                             "National News"="contributetrustpbs_nationalnews",
+                             "Organization"="contributetrustpbs_organisation")) %>%
+  na.omit() %>%
+  mutate(trust = fct_relevel(trust, 
+                             "No opinion", 
+                             "Distrust a lot", 
+                             "Somewhat distrust", 
+                             "Neither trust nor distrust", 
+                             "Somewhat trust",
+                             "Trust a lot" ))
+
+```
+
+```{r, fig.width=12, fig.height=6}
+g <- ggplot(contrib, aes(y=trust, x=count, fill=reason)) +
+  geom_col() +
+  facet_wrap(~ reason, ncol=5) +
+  guides(fill=FALSE) +
+  theme(text=element_text(family="serif")) +
+  xlab("Count") +
+  ylab("Level of trust")
+g
+```
+
 
 ### How and in what ways is trust in PBS  based on processed-based, historical viewing habits?
 
-### How and in what ways is trust in PBS based on its programmatic and content-based decisions?
+
 
 ### How is trust in PBS related to political affiliations, to media use and attitudes and to wider SES?
  
