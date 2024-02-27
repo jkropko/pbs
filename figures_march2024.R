@@ -175,7 +175,9 @@ g <- ggplot(kids, aes(x=count, y=contributetrustpbs_childrenprograms, fill=polit
   geom_text(aes(label = disp), hjust=-.1, size=3) +
   xlab("Count") +
   ylab("Response") +
-  xlim(c(0, 110))
+  xlim(c(0, 150))
 g
 dev.off()
+
+#Process-based trust: Won’t you be my neighbor?
 
