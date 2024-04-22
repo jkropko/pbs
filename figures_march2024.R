@@ -179,5 +179,78 @@ g <- ggplot(kids, aes(x=count, y=contributetrustpbs_childrenprograms, fill=polit
 g
 dev.off()
 
-#Process-based trust: Won’t you be my neighbor?
+#Would it be possible to get a frequency table/chart/figure of levels of levels of trust in PBS kids (Q32_6)?
+kidstv <- data %>%
+  group_by(contributetrustpbs_childrenprograms) %>%
+  summarize(count = n()) %>%
+  na.omit()
+
+pdf("figures/figure5.pdf", width=8, height=6)
+g <- ggplot(kidstv, aes(x=contributetrustpbs_childrenprograms, y=count)) +
+  geom_col(fill="blue") +
+  theme(text=element_text(family="serif")) +
+  geom_text(aes(label = count), hjust=-.5, size=3) +
+  xlab("Level of trust in children’s educational programming on PBS") +
+  ylab("Count") +
+  guides(fill=FALSE) +
+  coord_flip() +
+  ylim(c(0,650))
+g
+dev.off()
+
+#Would it be possible to get a frequency table/chart/figure on how much people watch PBS kids (Q29_3)
+kidstv <- data %>%
+  group_by(consumepbs_chidlrenprograms) %>%
+  summarize(count = n()) %>%
+  na.omit() %>%
+  mutate(consumepbs_chidlrenprograms = fct_relevel(consumepbs_chidlrenprograms,
+                                                   "None at all",
+                                                   "A little",
+                                                   "A moderate amount",
+                                                   "A lot",
+                                                   "A great deal"))
+
+pdf("figures/figure6.pdf", width=8, height=6)
+g <- ggplot(kidstv, aes(x=consumepbs_chidlrenprograms, y=count)) +
+  geom_col(fill="blue") +
+  theme(text=element_text(family="serif")) +
+  geom_text(aes(label = count), hjust=-.5, size=3) +
+  xlab("How much children's programming on PBS do you consume?") +
+  ylab("Count") +
+  guides(fill=FALSE) +
+  coord_flip() +
+  ylim(c(0,500))
+g
+dev.off()
+
+#Would it be possible to get a frequency table/chart/figure on our recoded open ended questions (Q_38)
+open <- data %>%
+  group_by(open_whyyoutrust) %>%
+  summarize(count = n()) %>%
+  na.omit() %>%
+  filter(open_whyyoutrust != "NA") %>%
+  mutate(open_whyyoutrust = fct_relevel(open_whyyoutrust,
+                                        "A specific show or program",
+                                        "Structure of the network",
+                                        "Range and diversity of programming",
+                                        "Children's and educational programming",
+                                        "Nostalgia, familiarity, and comfort",
+                                        "High quality programming",
+                                        "Public funding",
+                                        "Other", 
+                                        "News exhibits political moderation, unbiasedness, or accuracy" ))
+
+pdf("figures/figure7.pdf", width=8, height=6)
+g <- ggplot(open, aes(x=open_whyyoutrust, y=count)) +
+  geom_col(fill="blue") +
+  theme(text=element_text(family="serif")) +
+  geom_text(aes(label = count), hjust=-.5, size=3) +
+  xlab("Why do you trust PBS? (Open-ended, manually categorized)") +
+  ylab("Count") +
+  guides(fill=FALSE) +
+  coord_flip() +
+  ylim(c(0,500))
+g
+dev.off()
+
 
