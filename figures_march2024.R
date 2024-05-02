@@ -253,4 +253,20 @@ g <- ggplot(open, aes(x=open_whyyoutrust, y=count)) +
 g
 dev.off()
 
+#Percentage of people who considered PBS a major source of news (Q.18.8)
 
+data %>%
+  group_by(subscription_pbs) %>%
+  summarize(count = n())
+
+#Percentage of people who said they consumed PBS children’s educational programming (a little, a moderate amount, a lot, a great deal) (Q. 29.3)
+
+data %>%
+  group_by(consumepbs_chidlrenprograms) %>%
+  summarize(count = n())
+
+#Percentage of people who said they consumed PBS Kids Games (a little, a moderate amount, a lot, a great deal) (Q 29.4)
+
+data %>%
+  group_by(consumepbs_kidsgames) %>%
+  summarize(count = n())
