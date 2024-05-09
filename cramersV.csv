@@ -1,0 +1,38 @@
+source,Cramer's V,"Cramer's V (excluding ""Not a source"")"
+PBS,0.1,0.1
+Apple News,0.209,0.103
+Google News,0.146,0.117
+Business Insider,0.221,0.13
+ABC News,0.099,0.137
+Time,0.174,0.14
+Facebook,0.166,0.143
+Vox,0.242,0.149
+Youtube,0.19,0.149
+Other,0.145,0.152
+CNN,0.174,0.153
+NPR,0.175,0.153
+CBS News,0.116,0.154
+Politico,0.223,0.158
+Washington Post,0.18,0.17
+LinkedIn,0.242,0.173
+Yahoo News,0.178,0.173
+Univision,0.238,0.176
+New York Times,0.193,0.178
+Washington Examiner,0.245,0.184
+Vice,0.219,0.185
+Huffington Post,0.203,0.185
+Twitter,0.216,0.188
+Snapchat,0.257,0.193
+Reddit,0.241,0.193
+Instagram,0.236,0.205
+The Hill,0.25,0.206
+Rush Limbaugh,0.294,0.207
+MSNBC,0.188,0.213
+Tiktok,0.242,0.214
+Breitbart,0.284,0.218
+USA Today,0.196,0.227
+The Economist,0.241,0.233
+The Daily Caller,0.25,0.236
+Buzzfeed,0.226,0.24
+Sean Hannity,0.325,0.242
+Fox News,0.332,0.26

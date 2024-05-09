@@ -1,4 +1,5 @@
 library(tidyverse)
+library(rcompanion)
 source("DataCleaning.R")
 
 # Table 1: Institutions x Value for Public Dollars 
@@ -111,8 +112,8 @@ contribute <- data %>%
   summarize(count=n()) %>%
   filter(is.na(response))
 
-# Table 3: PBS as minor or major soource of news by respondents’ political leaning (N=1533, missing values=4) 
-politics <- data %>%
+# Table 3: PBS as minor or major source of news by respondents’ political leaning (N=1533, missing values=4) 
+politics_pbs <- data %>%
   group_by(subscription_pbs, politics) %>%
   summarize(count=n()) %>%
   group_by(politics) %>%
@@ -120,7 +121,6 @@ politics <- data %>%
          percent = count/total,
          disp = paste(round(100*percent, 1), "%", sep=""),
          pol_disp = paste(politics, "\n (N = ", total, ")", sep="")) %>%
-  filter(subscription_pbs=="Minor source") %>%
   mutate(pol_disp = fct_relevel(as.factor(pol_disp), 
                                 "Extremely liberal\n (N = 183)",
                                 "Moderately liberal\n (N = 217)",
@@ -128,13 +128,198 @@ politics <- data %>%
                                 "Neither liberal nor conservative\n (N = 325)",
                                 "Slightly conservative\n (N = 156)",
                                 "Moderately conservative\n (N = 225)",
-                                "Extremely conservative\n (N = 296)"))
+                                "Extremely conservative\n (N = 296)"),
+         source = "PBS") %>%
+  rename(subscription=subscription_pbs) %>%
+  na.omit()
+
+politics_msnbc <- data %>%
+  group_by(subscription_msnbc, politics) %>%
+  summarize(count=n()) %>%
+  group_by(politics) %>%
+  mutate(total = sum(count),
+         percent = count/total,
+         disp = paste(round(100*percent, 1), "%", sep=""),
+         pol_disp = paste(politics, "\n (N = ", total, ")", sep="")) %>%
+  mutate(pol_disp = fct_relevel(as.factor(pol_disp), 
+                                "Extremely liberal\n (N = 183)",
+                                "Moderately liberal\n (N = 217)",
+                                "Slightly liberal\n (N = 131)",
+                                "Neither liberal nor conservative\n (N = 325)",
+                                "Slightly conservative\n (N = 156)",
+                                "Moderately conservative\n (N = 225)",
+                                "Extremely conservative\n (N = 296)"),
+         source = "MSNBC") %>%
+  rename(subscription=subscription_msnbc) %>%
+  na.omit()
+
+politics_fox <- data %>%
+  group_by(subscription_fox, politics) %>%
+  summarize(count=n()) %>%
+  group_by(politics) %>%
+  mutate(total = sum(count),
+         percent = count/total,
+         disp = paste(round(100*percent, 1), "%", sep=""),
+         pol_disp = paste(politics, "\n (N = ", total, ")", sep="")) %>%
+  mutate(pol_disp = fct_relevel(as.factor(pol_disp), 
+                                "Extremely liberal\n (N = 183)",
+                                "Moderately liberal\n (N = 217)",
+                                "Slightly liberal\n (N = 131)",
+                                "Neither liberal nor conservative\n (N = 325)",
+                                "Slightly conservative\n (N = 156)",
+                                "Moderately conservative\n (N = 225)",
+                                "Extremely conservative\n (N = 296)"),
+         source = "Fox News") %>%
+  rename(subscription=subscription_fox) %>%
+  na.omit()
+
+politics_abc <- data %>%
+  group_by(subscription_abc, politics) %>%
+  summarize(count=n()) %>%
+  group_by(politics) %>%
+  mutate(total = sum(count),
+         percent = count/total,
+         disp = paste(round(100*percent, 1), "%", sep=""),
+         pol_disp = paste(politics, "\n (N = ", total, ")", sep="")) %>%
+  mutate(pol_disp = fct_relevel(as.factor(pol_disp), 
+                                "Extremely liberal\n (N = 183)",
+                                "Moderately liberal\n (N = 217)",
+                                "Slightly liberal\n (N = 131)",
+                                "Neither liberal nor conservative\n (N = 325)",
+                                "Slightly conservative\n (N = 156)",
+                                "Moderately conservative\n (N = 225)",
+                                "Extremely conservative\n (N = 296)"),
+         source = "ABC News") %>%
+  rename(subscription=subscription_abc) %>%
+  na.omit()
+
+politics_nyt <- data %>%
+  group_by(subscription_nyt, politics) %>%
+  summarize(count=n()) %>%
+  group_by(politics) %>%
+  mutate(total = sum(count),
+         percent = count/total,
+         disp = paste(round(100*percent, 1), "%", sep=""),
+         pol_disp = paste(politics, "\n (N = ", total, ")", sep="")) %>%
+  mutate(pol_disp = fct_relevel(as.factor(pol_disp), 
+                                "Extremely liberal\n (N = 183)",
+                                "Moderately liberal\n (N = 217)",
+                                "Slightly liberal\n (N = 131)",
+                                "Neither liberal nor conservative\n (N = 325)",
+                                "Slightly conservative\n (N = 156)",
+                                "Moderately conservative\n (N = 225)",
+                                "Extremely conservative\n (N = 296)"),
+         source = "New York Times") %>%
+  rename(subscription=subscription_nyt) %>%
+  na.omit()
+
+politics_npr <- data %>%
+  group_by(subscription_npr, politics) %>%
+  summarize(count=n()) %>%
+  group_by(politics) %>%
+  mutate(total = sum(count),
+         percent = count/total,
+         disp = paste(round(100*percent, 1), "%", sep=""),
+         pol_disp = paste(politics, "\n (N = ", total, ")", sep="")) %>%
+  mutate(pol_disp = fct_relevel(as.factor(pol_disp), 
+                                "Extremely liberal\n (N = 183)",
+                                "Moderately liberal\n (N = 217)",
+                                "Slightly liberal\n (N = 131)",
+                                "Neither liberal nor conservative\n (N = 325)",
+                                "Slightly conservative\n (N = 156)",
+                                "Moderately conservative\n (N = 225)",
+                                "Extremely conservative\n (N = 296)"),
+         source = "National Public Radio") %>%
+  rename(subscription=subscription_npr) %>%
+  na.omit()
+
+
+politics <- bind_rows(politics_pbs, politics_msnbc, politics_fox, politics_abc, politics_nyt, politics_npr) %>%
+  arrange(politics, subscription) %>%
+  mutate(subscription = fct_relevel(subscription, "Not a source", "Minor source", "Major source"))
+write_csv(politics, "politics.csv")
+
+pdf("figures/figure3_new.pdf", width=15, height=20)
+g <- ggplot(politics, aes(x=pol_disp, y=100*percent, fill=subscription)) +
+  geom_col(position="dodge") +
+  theme(text=element_text(family="serif")) +
+  geom_text(aes(label = disp), vjust=-.5, size=3, position = position_dodge(width = .9)) +
+  xlab("Political Ideology") +
+  ylab("Percent Citing Source as a Minor, Major, or Not a Source of Political and Election News") +
+  scale_y_continuous(breaks=c(0, 10, 20, 30, 40, 50, 60)) +
+  facet_grid(source ~ .)
+g
+dev.off()
+
+#Chi2 tests
+subscribe <- data %>%
+  select(starts_with("subscription_"))
+
+test1 <- apply(subscribe, 2, FUN=function(x){
+  tab <- table(x, pol)
+  c <- cramerV(tab)
+  return(c)
+})
+
+test2 <- apply(subscribe, 2, FUN=function(x){
+  y <- x[x!="Not a source"]
+  pol <- data$politics[x!="Not a source"]
+  tab <- table(y, pol)
+  c <- cramerV(tab)
+  return(c)
+})
+
+chi2results <- tibble(source = colnames(subscribe),
+                          `Cramer's V` = round(as.numeric(test1), 3),
+                          `Cramer's V (excluding "Not a source")` = round(as.numeric(test2), 3)) %>%
+  arrange(test2) %>%
+  filter(!(source %in% c("subscription_other_text", "subscription_ncb"))) %>%
+  mutate(source = fct_recode(source,
+                             "PBS"="subscription_pbs",
+                             "Apple News"="subscription_applenews",
+                             "Google News"="subscription_googlenews",
+                             "Business Insider"="subscription_businessinsider",
+                             "ABC News"="subscription_abc",
+                             "Time"="subscription_time",
+                             "Facebook"="subscription_facebook",
+                             "Vox"="subscription_vox",               
+                             "Youtube"="subscription_youtube",
+                             "Other"="subscription_other",
+                             "CNN"="subscription_cnn",
+                             "NPR"="subscription_npr",
+                             "CBS News"="subscription_cbs",
+                             "Politico"="subscription_politico",
+                             "Washington Post"="subscription_wapo",
+                             "LinkedIn"="subscription_linkedin",
+                             "Yahoo News"="subscription_yahoonews",
+                             "Univision"="subscription_univision",
+                             "New York Times"="subscription_nyt",
+                             "Washington Examiner"="subscription_washingtonexaminer",
+                             "Vice"="subscription_vice",
+                             "Huffington Post"="subscription_huffpo",
+                             "Twitter"="subscription_twitter",
+                             "Snapchat"="subscription_snapchat",
+                             "Reddit"="subscription_reddit",
+                             "Instagram"="subscription_instagram",
+                             "The Hill"="subscription_hill",
+                             "Rush Limbaugh"="subscription_limbaugh",
+                             "MSNBC"="subscription_msnbc",
+                             "Tiktok"="subscription_tiktok",
+                             "Breitbart"="subscription_breitbart",
+                             "USA Today"="subscription_usatoday",
+                             "The Economist"="subscription_economist",
+                             "The Daily Caller"="subscription_dailycaller",
+                             "Buzzfeed"="subscription_bzzfd",
+                             "Sean Hannity"="subscription_hannity",
+                             "Fox News"="subscription_fox"))
+write_csv(chi2results, "cramersV.csv")
 
 pdf("figures/figure3.pdf", width=10, height=5)
-g <- ggplot(politics, aes(x=pol_disp, y=100*percent)) +
+politics_pbs <- filter(politics_pbs, subscription=="Major source")
+g <- ggplot(politics_pbs, aes(x=pol_disp, y=100*percent)) +
   geom_col(fill="blue") +
   theme(text=element_text(family="serif")) +
-  geom_text(aes(label = disp), vjust=-.5, size=3) +
+  geom_text(aes(label = disp), vjust=-.5, size=3, ) +
   geom_hline(yintercept=50, linetype='dashed', col = 'black') +
   xlab("Political Ideology") +
   ylab("Percent Citing PBS as a Major Source of Political and Election News") +
