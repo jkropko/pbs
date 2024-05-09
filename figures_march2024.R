@@ -272,7 +272,7 @@ test2 <- apply(subscribe, 2, FUN=function(x){
 chi2results <- tibble(source = colnames(subscribe),
                           `Cramer's V` = round(as.numeric(test1), 3),
                           `Cramer's V (excluding "Not a source")` = round(as.numeric(test2), 3)) %>%
-  arrange(test2) %>%
+  arrange(`Cramer's V`) %>%
   filter(!(source %in% c("subscription_other_text", "subscription_ncb"))) %>%
   mutate(source = fct_recode(source,
                              "PBS"="subscription_pbs",
